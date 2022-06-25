@@ -3,12 +3,17 @@ contract CrowdFundingWithDeadline {
 
 
     enum State { Ongoing, Failed, Succeeded, PaidOut }
-
+    event CampaignFinished(
+        address addr,
+        uint totalCollected,
+        bool succeeded
+    );
     
+    uint public counter = 0;
     uint time;
     string public name;
     uint public targetAmount;
-    uint public fundingDeadline;
+    uint public campaignDeadline;
     address public beneficiary;
     State public state;
     mapping(address => uint) public amounts;
@@ -30,7 +35,7 @@ contract CrowdFundingWithDeadline {
     {
         name = campaignName;
         targetAmount = targetAmountEth * 1 ether;
-        fundingDeadline = currentTime() + durationInMin * 1 minutes;
+        campaignDeadline = currentTime() + minutesToSeconds(durationInMin);
         beneficiary = beneficiaryAddress;
         state = State.Ongoing;
     }
@@ -39,6 +44,7 @@ contract CrowdFundingWithDeadline {
         require(beforeDeadline(), "No contributions after a deadline");
         amounts[msg.sender] += msg.value;
         totalCollected += msg.value;
+        incrementCounter();
 
         if (totalCollected >= targetAmount) {
             collected = true;
@@ -54,7 +60,7 @@ contract CrowdFundingWithDeadline {
             state = State.Succeeded;
         }
 
-       // emit CampaignFinished(address(this), totalCollected, collected);
+        emit CampaignFinished(address(this), totalCollected, collected);
     }
 
     function collect() public inState(State.Succeeded) {
@@ -76,7 +82,7 @@ contract CrowdFundingWithDeadline {
     }
 
     function beforeDeadline() public view returns(bool) {
-        return currentTime() < fundingDeadline;
+        return currentTime() < campaignDeadline;
     }
 
      function currentTime() internal view returns(uint) {
@@ -98,5 +104,38 @@ contract CrowdFundingWithDeadline {
     function isSuccessful() public view returns (bool) {
         return state == State.PaidOut;
     }
+    function getCampaign() public view returns 
+    (
+        string memory campaignName,
+        uint targetAmountEth,
+        uint durationInMin,
+        address beneficiaryAddress,
+        uint totalCollect
+     
+    ) {
+        campaignName = name;
+        targetAmountEth = targetAmount;
+        durationInMin = campaignDeadline;
+        beneficiaryAddress = beneficiary;
+        totalCollect = totalCollected;
+    }
+    function etherToWei(uint sumInEth) public pure returns(uint) {
+        return sumInEth * 1 ether;
+    }
+
+    function minutesToSeconds(uint timeInMin) public pure returns(uint) {
+        return timeInMin * 1 minutes;
+    }
+    function incrementCounter() public {
+        counter += 1;
+    }
+    function getBackers() public view returns (uint) {
+        return counter;
+    }
 
 }
+
+
+       
+
+

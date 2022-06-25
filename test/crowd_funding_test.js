@@ -7,7 +7,6 @@ contract('CrowdFundingWithDeadline', function(accounts) {
     let beneficiary = accounts[1];
 
     const ONE_ETH = 1000000000000000000;
-    const ERROR_MSG = 'VM Exception while processing transaction: revert';
     const ONGOING_STATE = '0';
     const FAILED_STATE = '1';
     const SUCCEEDED_STATE = '2';
@@ -24,13 +23,8 @@ contract('CrowdFundingWithDeadline', function(accounts) {
         let targetAmount = await contract.targetAmount.call()
         expect(parseInt(targetAmount)).to.equal(ONE_ETH);
 
-        /*let fundingDeadline = await contract.fundingDeadline.call()
-        var date = new Date(fundingDeadline * 1000);
-        var hours = date.getHours();
-        var minutes = "0" + date.getMinutes();
-        var formattedTime = hours + ':' + minutes.substr(-2);
-        //console.log(formattedTime);
-        //expect(formattedTime).to.equal(600);*/
+        let campaignDeadline = await contract.campaignDeadline.call()
+        expect(campaignDeadline.toNumber()).to.equal(600);
 
         let actualBeneficiary = await contract.beneficiary.call()
         expect(actualBeneficiary).to.equal(beneficiary);
