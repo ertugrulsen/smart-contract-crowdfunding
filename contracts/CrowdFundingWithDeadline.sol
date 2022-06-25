@@ -10,10 +10,10 @@ contract CrowdFundingWithDeadline {
     );
     
     uint public counter = 0;
-    uint time;
+    int time;
     string public name;
     uint public targetAmount;
-    uint public campaignDeadline;
+    int public campaignDeadline;
     address public beneficiary;
     State public state;
     mapping(address => uint) public amounts;
@@ -28,14 +28,14 @@ contract CrowdFundingWithDeadline {
     constructor(
         string memory campaignName,
         uint targetAmountEth,
-        uint durationInMin,
+        int durationInMin,
         address beneficiaryAddress
     )
         public
     {
         name = campaignName;
         targetAmount = targetAmountEth * 1 ether;
-        campaignDeadline = currentTime() + minutesToSeconds(durationInMin);
+        campaignDeadline = durationInMin;
         beneficiary = beneficiaryAddress;
         state = State.Ongoing;
     }
@@ -82,14 +82,17 @@ contract CrowdFundingWithDeadline {
     }
 
     function beforeDeadline() public view returns(bool) {
+        if(currentTime() < 0){
+            return false;
+        }
         return currentTime() < campaignDeadline;
     }
 
-     function currentTime() internal view returns(uint) {
+     function currentTime() internal view returns(int) {
         return time;
     }
 
-    function setCurrentTime(uint newTime) public {
+    function setCurrentTime(int newTime) public {
         time = newTime;
     }
 
@@ -103,21 +106,6 @@ contract CrowdFundingWithDeadline {
 
     function isSuccessful() public view returns (bool) {
         return state == State.PaidOut;
-    }
-    function getCampaign() public view returns 
-    (
-        string memory campaignName,
-        uint targetAmountEth,
-        uint durationInMin,
-        address beneficiaryAddress,
-        uint totalCollect
-     
-    ) {
-        campaignName = name;
-        targetAmountEth = targetAmount;
-        durationInMin = campaignDeadline;
-        beneficiaryAddress = beneficiary;
-        totalCollect = totalCollected;
     }
     function etherToWei(uint sumInEth) public pure returns(uint) {
         return sumInEth * 1 ether;
