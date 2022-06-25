@@ -12,9 +12,9 @@
     "type": "uint256"
    },
    {
-    "internalType": "uint256",
+    "internalType": "int256",
     "name": "durationInMin",
-    "type": "uint256"
+    "type": "int256"
    },
    {
     "internalType": "address",
@@ -100,9 +100,9 @@
   "name": "campaignDeadline",
   "outputs": [
    {
-    "internalType": "uint256",
+    "internalType": "int256",
     "name": "",
-    "type": "uint256"
+    "type": "int256"
    }
   ],
   "stateMutability": "view",
@@ -181,39 +181,6 @@
    {
     "internalType": "uint256",
     "name": "",
-    "type": "uint256"
-   }
-  ],
-  "stateMutability": "view",
-  "type": "function"
- },
- {
-  "inputs": [],
-  "name": "getCampaign",
-  "outputs": [
-   {
-    "internalType": "string",
-    "name": "campaignName",
-    "type": "string"
-   },
-   {
-    "internalType": "uint256",
-    "name": "targetAmountEth",
-    "type": "uint256"
-   },
-   {
-    "internalType": "uint256",
-    "name": "durationInMin",
-    "type": "uint256"
-   },
-   {
-    "internalType": "address",
-    "name": "beneficiaryAddress",
-    "type": "address"
-   },
-   {
-    "internalType": "uint256",
-    "name": "totalCollect",
     "type": "uint256"
    }
   ],
@@ -301,9 +268,9 @@
  {
   "inputs": [
    {
-    "internalType": "uint256",
+    "internalType": "int256",
     "name": "newTime",
-    "type": "uint256"
+    "type": "int256"
    }
   ],
   "name": "setCurrentTime",
