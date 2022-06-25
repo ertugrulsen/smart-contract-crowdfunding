@@ -16,12 +16,18 @@ contract('CrowdFundingWithDeadline', function(accounts) {
         contract = await CrowdFundingWithDeadline.new('funding', 1, 10, beneficiary, {from: contractCreator, gas: 2000000});
     });
 
-    it('contract is initialized', async function() {
 
-        let campaignDeadline = await contract.campaignDeadline.call()
-        console.log(campaignDeadline)
-        expect(campaignDeadline.toNumber()).to.equal(10);
+ 
+    it('crowdfunding succeeded', async function() {
+        await contract.contribute({value: ONE_ETH, from: contractCreator});
+        await contract.setCurrentTime(9);
+        await contract.finishCrowdFunding();
+        let state = await contract.state.call();
 
+        expect(String(state.valueOf())).to.equal(SUCCEEDED_STATE);
+    });
+
+    it('crowdfunding failed', async function() {
         await contract.setCurrentTime(11);
         await contract.finishCrowdFunding();
         let state = await contract.state.call();
@@ -29,20 +35,7 @@ contract('CrowdFundingWithDeadline', function(accounts) {
         expect(String(state.valueOf())).to.equal(FAILED_STATE);
     });
 
-    it('money paid out', async function() {
-
-        await contract.contribute({value: ONE_ETH, frameElement: contractCreator});
-        await contract.setCurrentTime(9);
-        await contract.finishCrowdFunding();
-
-        let beneficiaryAmount = await web3.eth.getBalance(beneficiary);
-        await contract.collect({from: contractCreator});
-     
-
-
-
-    });
-
+ 
 
 
    
