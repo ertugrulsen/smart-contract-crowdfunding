@@ -52,12 +52,16 @@ contract CrowdFundingWithDeadline {
     }
 
     function finishCrowdFunding() public inState(State.Ongoing) {
-        require(!beforeDeadline(), "Cannot finish campaign before a deadline");
+        if(currentTime() < campaignDeadline && currentTime() > 0){
 
-        if (!collected) {
+            if (!collected) {
+                state = State.Failed;
+            } else {
+                state = State.Succeeded;
+            }
+        }
+        else{
             state = State.Failed;
-        } else {
-            state = State.Succeeded;
         }
 
         emit CampaignFinished(address(this), totalCollected, collected);
@@ -85,6 +89,7 @@ contract CrowdFundingWithDeadline {
         if(currentTime() < 0){
             return false;
         }
+      
         return currentTime() < campaignDeadline;
     }
 
