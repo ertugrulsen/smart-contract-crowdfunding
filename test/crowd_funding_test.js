@@ -7,14 +7,13 @@ contract('CrowdFundingWithDeadline', function(accounts) {
     let beneficiary = accounts[1];
 
     const ONE_ETH = 1000000000000000000;
-    const ERROR_MSG = 'VM Exception while processing transaction: revert';
     const ONGOING_STATE = '0';
     const FAILED_STATE = '1';
     const SUCCEEDED_STATE = '2';
     const PAID_OUT_STATE = '3';
 
     beforeEach(async function() {
-        contract = await CrowdFundingWithDeadline.new('funding', 1, 10, beneficiary, {from: contractCreator, gas: 2000000});
+        contract = await CrowdFundingWithDeadline.new('campaign', 1, 10, beneficiary, {from: contractCreator, gas: 2000000});
     });
 
     it('contract is initialized', async function() {
@@ -24,13 +23,8 @@ contract('CrowdFundingWithDeadline', function(accounts) {
         let targetAmount = await contract.targetAmount.call()
         expect(parseInt(targetAmount)).to.equal(ONE_ETH);
 
-        /*let fundingDeadline = await contract.fundingDeadline.call()
-        var date = new Date(fundingDeadline * 1000);
-        var hours = date.getHours();
-        var minutes = "0" + date.getMinutes();
-        var formattedTime = hours + ':' + minutes.substr(-2);
-        //console.log(formattedTime);
-        //expect(formattedTime).to.equal(600);*/
+        let campaignDeadline = await contract.campaignDeadline.call()
+        expect(campaignDeadline.toNumber()).to.equal(600);
 
         let actualBeneficiary = await contract.beneficiary.call()
         expect(actualBeneficiary).to.equal(beneficiary);
@@ -80,7 +74,7 @@ contract('CrowdFundingWithDeadline', function(accounts) {
         expect(String(state.valueOf())).to.equal(FAILED_STATE);
     });
 
-    it('collected money paid out', async function() {
+    it('money paid out', async function() {
         await contract.contribute({value: ONE_ETH, from: contractCreator});
         await contract.setCurrentTime(601);
         await contract.finishCrowdFunding();
@@ -95,7 +89,7 @@ contract('CrowdFundingWithDeadline', function(accounts) {
         expect(String(fundingState.valueOf())).to.equal(PAID_OUT_STATE);
     });
 
-    it('withdraw funds from the contract', async function() {
+    it('withdraw', async function() {
         await contract.contribute({value: ONE_ETH - 100, from: contractCreator});
         await contract.setCurrentTime(601);
         await contract.finishCrowdFunding();
