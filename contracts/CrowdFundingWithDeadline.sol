@@ -125,7 +125,24 @@ contract CrowdFundingWithDeadline {
     function getBackers() public view returns (uint) {
         return counter;
     }
-
+     function getCampaign() public view returns 
+    (
+        string memory campaignName,
+        uint targetAmountEth,
+        address beneficiaryAddress,
+        uint totalCollect,
+        State currentState
+     
+    ) {
+        campaignName = name;
+        targetAmountEth = targetAmount;
+        beneficiaryAddress = beneficiary;
+        totalCollect = totalCollected;
+        currentState = state;
+    }
+    function getStatus() public view returns (State) {
+        return state;
+    }
 }
 
 

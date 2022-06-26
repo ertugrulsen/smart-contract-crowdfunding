@@ -22,18 +22,26 @@ contract('CrowdFundingWithDeadline', function(accounts) {
         await contract.contribute({value: ONE_ETH, from: contractCreator});
         await contract.setCurrentTime(9);
         await contract.finishCrowdFunding();
+
         let state = await contract.state.call();
+        let details = await contract.getCampaign();
+        let getStatus = await contract.getStatus();
 
-        expect(String(state.valueOf())).to.equal(SUCCEEDED_STATE);
+        //console.log(getStatus.valueOf());
+        expect(String(getStatus.valueOf())).to.equal(SUCCEEDED_STATE);
     });
-
     it('crowdfunding failed', async function() {
+        await contract.contribute({value: ONE_ETH, from: contractCreator});
         await contract.setCurrentTime(11);
         await contract.finishCrowdFunding();
-        let state = await contract.state.call();
 
+        let state = await contract.state.call();
+        let details = await contract.getCampaign();
         expect(String(state.valueOf())).to.equal(FAILED_STATE);
     });
+
+
+    
 
  
 

@@ -189,6 +189,52 @@
  },
  {
   "inputs": [],
+  "name": "getCampaign",
+  "outputs": [
+   {
+    "internalType": "string",
+    "name": "campaignName",
+    "type": "string"
+   },
+   {
+    "internalType": "uint256",
+    "name": "targetAmountEth",
+    "type": "uint256"
+   },
+   {
+    "internalType": "address",
+    "name": "beneficiaryAddress",
+    "type": "address"
+   },
+   {
+    "internalType": "uint256",
+    "name": "totalCollect",
+    "type": "uint256"
+   },
+   {
+    "internalType": "enum CrowdFundingWithDeadline.State",
+    "name": "currentState",
+    "type": "uint8"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [],
+  "name": "getStatus",
+  "outputs": [
+   {
+    "internalType": "enum CrowdFundingWithDeadline.State",
+    "name": "",
+    "type": "uint8"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [],
   "name": "getTotalCollected",
   "outputs": [
    {
