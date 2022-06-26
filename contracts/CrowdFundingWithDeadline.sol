@@ -1,4 +1,3 @@
-
 contract CrowdFundingWithDeadline {
 
 
@@ -143,9 +142,7 @@ contract CrowdFundingWithDeadline {
     function getStatus() public view returns (State) {
         return state;
     }
+    function setStatus(State newState) public {
+        state = newState;
+    }
 }
-
-
-       
-
-
