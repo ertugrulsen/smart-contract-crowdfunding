@@ -1,14 +1,18 @@
-
 contract CrowdFundingWithDeadline {
 
 
     enum State { Ongoing, Failed, Succeeded, PaidOut }
-
+    event CampaignFinished(
+        address addr,
+        uint totalCollected,
+        bool succeeded
+    );
     
-    uint time;
+    uint public counter = 0;
+    int time;
     string public name;
     uint public targetAmount;
-    uint public fundingDeadline;
+    int public campaignDeadline;
     address public beneficiary;
     State public state;
     mapping(address => uint) public amounts;
@@ -23,14 +27,14 @@ contract CrowdFundingWithDeadline {
     constructor(
         string memory campaignName,
         uint targetAmountEth,
-        uint durationInMin,
+        int durationInMin,
         address beneficiaryAddress
     )
         public
     {
         name = campaignName;
         targetAmount = targetAmountEth * 1 ether;
-        fundingDeadline = currentTime() + durationInMin * 1 minutes;
+        campaignDeadline = durationInMin;
         beneficiary = beneficiaryAddress;
         state = State.Ongoing;
     }
@@ -39,6 +43,7 @@ contract CrowdFundingWithDeadline {
         require(beforeDeadline(), "No contributions after a deadline");
         amounts[msg.sender] += msg.value;
         totalCollected += msg.value;
+        incrementCounter();
 
         if (totalCollected >= targetAmount) {
             collected = true;
@@ -46,15 +51,19 @@ contract CrowdFundingWithDeadline {
     }
 
     function finishCrowdFunding() public inState(State.Ongoing) {
-        require(!beforeDeadline(), "Cannot finish campaign before a deadline");
+        if(currentTime() < campaignDeadline && currentTime() > 0){
 
-        if (!collected) {
+            if (!collected) {
+                state = State.Failed;
+            } else {
+                state = State.Succeeded;
+            }
+        }
+        else{
             state = State.Failed;
-        } else {
-            state = State.Succeeded;
         }
 
-       // emit CampaignFinished(address(this), totalCollected, collected);
+        emit CampaignFinished(address(this), totalCollected, collected);
     }
 
     function collect() public inState(State.Succeeded) {
@@ -76,14 +85,18 @@ contract CrowdFundingWithDeadline {
     }
 
     function beforeDeadline() public view returns(bool) {
-        return currentTime() < fundingDeadline;
+        if(currentTime() < 0){
+            return false;
+        }
+      
+        return currentTime() < campaignDeadline;
     }
 
-     function currentTime() internal view returns(uint) {
+     function currentTime() internal view returns(int) {
         return time;
     }
 
-    function setCurrentTime(uint newTime) public {
+    function setCurrentTime(int newTime) public {
         time = newTime;
     }
 
@@ -98,5 +111,38 @@ contract CrowdFundingWithDeadline {
     function isSuccessful() public view returns (bool) {
         return state == State.PaidOut;
     }
+    function etherToWei(uint sumInEth) public pure returns(uint) {
+        return sumInEth * 1 ether;
+    }
 
+    function minutesToSeconds(uint timeInMin) public pure returns(uint) {
+        return timeInMin * 1 minutes;
+    }
+    function incrementCounter() public {
+        counter += 1;
+    }
+    function getBackers() public view returns (uint) {
+        return counter;
+    }
+     function getCampaign() public view returns 
+    (
+        string memory campaignName,
+        uint targetAmountEth,
+        address beneficiaryAddress,
+        uint totalCollect,
+        State currentState
+     
+    ) {
+        campaignName = name;
+        targetAmountEth = targetAmount;
+        beneficiaryAddress = beneficiary;
+        totalCollect = totalCollected;
+        currentState = state;
+    }
+    function getStatus() public view returns (State) {
+        return state;
+    }
+    function setStatus(State newState) public {
+        state = newState;
+    }
 }
